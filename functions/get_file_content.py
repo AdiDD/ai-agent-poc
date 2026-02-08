@@ -18,7 +18,7 @@ def get_file_content(working_dir, file_path):
     try:
         with open(target_path) as f:
             content = f.read(READ_FILE_CHAR_LIMIT)
-            # It there are more characters available after reading max limit
+            # If there are more characters available after reading max limit
             # append an explanation on the content
             if f.read(1):
                 content += f'[... File "{file_path}" truncated at {READ_FILE_CHAR_LIMIT} characters]'
