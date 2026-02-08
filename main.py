@@ -34,7 +34,7 @@ def main():
 
     if args.verbose:
         usage_metadata = response.usage_metadata
-        if usage_metadata == None:
+        if usage_metadata is None:
             raise RuntimeError(
                 "could not read api client response, something went wrong"
             )
@@ -45,13 +45,13 @@ def main():
     # Print client response to console
     if response.function_calls:
         for function_call in response.function_calls:
-            print(f"Calling function: {function_call.name}({function_call.args})")
             function_call_result = call_function(function_call, args.verbose)
 
             if (
-                function_call_result.parts == None
-                or function_call_result.parts[0].function_response == None
-                or function_call_result.parts[0].function_response.response == None
+                function_call_result.parts is None
+                or not function_call_result.parts
+                or function_call_result.parts[0].function_response is None
+                or function_call_result.parts[0].function_response.response is None
             ):
                 raise Exception(
                     f"Something went wrong during the {function_call.name} function call, with args {function_call.args}"

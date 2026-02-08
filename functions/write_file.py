@@ -21,7 +21,6 @@ def write_file(working_dir, file_path, content):
 
     try:
         os.makedirs(dir_name, exist_ok=True)
-        print(f"writing to {target_path}")
         with open(target_path, "w") as f:
             f.write(content)
     except Exception as e:
