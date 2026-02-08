@@ -14,13 +14,13 @@ def write_file(working_dir, file_path, content):
     if os.path.isdir(target_path):
         return f'Error: Cannot write to "{file_path}" as it is a directory'
 
-    tail, head = os.path.split(target_path)
-    # head should be empty when path ends with "/"
-    if not head:
+    dir_name, base_name = os.path.split(target_path)
+    # base_name should be empty when path ends with "/"
+    if not base_name:
         return f'Error: Cannot write to "{file_path}" as it is not pointing to a file'
 
     try:
-        os.makedirs(tail, exist_ok=True)
+        os.makedirs(dir_name, exist_ok=True)
         print(f"writing to {target_path}")
         with open(target_path, "w") as f:
             f.write(content)
