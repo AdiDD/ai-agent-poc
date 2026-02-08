@@ -46,7 +46,9 @@ def get_files_info(working_dir, directory="."):
         dir_info.append(
             f"- {item['name']}: file_size={item['file_size']} bytes, is_dir={item['is_dir']}"
         )
-    print("\n".join(dir_info))
+    result = "\n".join(dir_info)
+    print(result)
+    return result
 
 
 schema_get_files_info = types.FunctionDeclaration(
