@@ -10,16 +10,16 @@ def get_files_info(working_dir, directory="."):
 
     if not valid_target_dir:
         return (
-            f'Error: Cannot list "{dir}" as is outside the permitted working directory'
+            f'Error: Cannot list "{directory}" as is outside the permitted working directory'
         )
 
     if not os.path.isdir(target_path):
-        return f"Error: {dir} is not a directory"
+        return f"Error: {directory} is not a directory"
 
     try:
         dir_list = os.listdir(target_path)
     except Exception as e:
-        return f"Could not see contents of {dir}, {e}"
+        return f"Could not see contents of {directory}, {e}"
 
     dir_contents = {}
     for item in dir_list:
