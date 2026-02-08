@@ -40,19 +40,11 @@ schema_write_file = types.FunctionDeclaration(
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
-            "working_dir": types.Schema(
-                type=types.Type.STRING,
-                description=(
-                    "Absolute or relative base directory that defines the permitted sandbox. "
-                    "The target file must resolve within this directory."
-                ),
-                min_length=1,
-            ),
             "file_path": types.Schema(
                 type=types.Type.STRING,
                 description=(
-                    "Path to the file to write, relative to working_dir (e.g. 'outputs/result.txt'). "
-                    "Must not escape working_dir (e.g. via '..'). Must point to a file (not end with '/')."
+                    "Path to the file to write, relative to the working directory."
+                    "Must not escape the current working directory (e.g. via '..'). Must point to a file."
                 ),
                 min_length=1,
             ),
@@ -61,6 +53,6 @@ schema_write_file = types.FunctionDeclaration(
                 description="Full text content to write to the file. This overwrites any existing file.",
             ),
         },
-        required=["working_dir", "file_path", "content"],
+        required=["file_path", "content"],
     ),
 )

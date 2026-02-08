@@ -32,29 +32,21 @@ schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
     description=(
         "Read and return the content of a file located within the permitted working directory. "
-        "The file_path must resolve inside working_dir and must point to an existing regular file. "
+        "The file_path must resolve inside the current working directory and must point to an existing regular file. "
         "Content may be truncated to a maximum character limit."
     ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
-            "working_dir": types.Schema(
-                type=types.Type.STRING,
-                description=(
-                    "Absolute or relative base directory that defines the permitted sandbox. "
-                    "The target file must resolve within this directory."
-                ),
-                min_length=1,
-            ),
             "file_path": types.Schema(
                 type=types.Type.STRING,
                 description=(
-                    "Path to the file to read, relative to working_dir (e.g. 'data/input.txt'). "
-                    "Must not escape working_dir (e.g. via '..'). Must point to a regular file."
+                    "Path to the file to read, relative to the current working directory (e.g. 'data/input.txt'). "
+                    "Must not escape the current working directory (e.g. via '..'). Must point to a regular file."
                 ),
                 min_length=1,
             ),
         },
-        required=["working_dir", "file_path"],
+        required=["file_path"],
     ),
 )

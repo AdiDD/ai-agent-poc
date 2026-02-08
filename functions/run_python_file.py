@@ -48,26 +48,18 @@ if __name__ == "__main__":
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
     description=(
-        "Execute a Python (.py) file located within the permitted working directory and return its output. "
-        "The file_path must resolve inside working_dir and must point to an existing regular .py file. "
+        "Execute a Python (.py) file and return its output. "
+        "The file_path must resolve inside the current working directory and must point to an existing regular .py file. "
         "Optional args are passed as command-line arguments to the script."
     ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
-            "working_dir": types.Schema(
-                type=types.Type.STRING,
-                description=(
-                    "Absolute or relative base directory that defines the permitted sandbox. "
-                    "The script must resolve within this directory."
-                ),
-                min_length=1,
-            ),
             "file_path": types.Schema(
                 type=types.Type.STRING,
                 description=(
-                    "Path to the Python script to execute, relative to working_dir "
-                    "(e.g. 'scripts/run_me.py'). Must not escape working_dir and must end with '.py'."
+                    "Path to the Python script to execute, relative to the current working directory"
+                    "(e.g. 'scripts/run_me.py')."
                 ),
                 min_length=1,
             ),
@@ -83,6 +75,6 @@ schema_run_python_file = types.FunctionDeclaration(
                 ),
             ),
         },
-        required=["working_dir", "file_path"],
+        required=["file_path"],
     ),
 )
