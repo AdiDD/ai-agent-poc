@@ -11,6 +11,4 @@ def main():
 
 
 if __name__ == "__main__":
-#    main()
-    print(get_file_content("calculator", "lorem.txt"))
-
+    main()
