@@ -10,3 +10,7 @@ wheels/
 .venv
 
 .env
+
+# Output by test_* functions
+calculator/lorem.txt
+calculator/pkg/morelorem.txt
