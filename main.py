@@ -1,5 +1,6 @@
 import os
 import argparse
+import json
 
 from dotenv import load_dotenv
 from google import genai
@@ -34,7 +35,7 @@ def main():
         # Track function calls to detect loops
         if function_calls:
             # Create a signature of the current function calls
-            call_signature = tuple(sorted((fc.name, str(fc.args)) for fc in function_calls))
+            call_signature = tuple(sorted((fc.name, json.dumps(fc.args, sort_keys=True)) for fc in function_calls))
             function_call_history.append(call_signature)
             
             # Check if we're stuck in a loop (same function call pattern repeated)
@@ -94,7 +95,7 @@ def generate_content(client, messages, args):
                 print(f"-> {function_call_result.parts[0].function_response.response}")
         return None, messages, response.function_calls
     else:
-        messages.append([types.Content(role="model", parts=[types.Part(text=response.text)])])
+        messages.append(types.Content(role="model", parts=[types.Part(text=response.text)]))
         return response, messages, None
 
 
