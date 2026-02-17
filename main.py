@@ -7,6 +7,7 @@ from google import genai
 from google.genai import types
 from prompts import system_prompt
 from call_function import available_functions, call_function
+from config import MAX_ITERATIONS, MAX_CONSECUTIVE_REPEATS
 
 
 def main():
@@ -26,23 +27,25 @@ def main():
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
     response = None
     function_call_history = []
-    max_iterations = 20
-    max_consecutive_repeats = 3
     
-    for iteration in range(max_iterations):
+    for iteration in range(MAX_ITERATIONS):
         response, messages, function_calls = generate_content(client, messages, args)
         
         # Track function calls to detect loops
         if function_calls:
             # Create a signature of the current function calls
-            call_signature = tuple(sorted((fc.name, json.dumps(fc.args, sort_keys=True)) for fc in function_calls))
+            call_signatures = []
+            for fc in function_calls:
+                serialized_args = json.dumps(fc.args, sort_keys=True)
+                call_signatures.append((fc.name, serialized_args))
+            call_signature = tuple(sorted(call_signatures))
             function_call_history.append(call_signature)
             
             # Check if we're stuck in a loop (same function call pattern repeated)
-            if len(function_call_history) >= max_consecutive_repeats:
-                recent_calls = function_call_history[-max_consecutive_repeats:]
+            if len(function_call_history) >= MAX_CONSECUTIVE_REPEATS:
+                recent_calls = function_call_history[-MAX_CONSECUTIVE_REPEATS:]
                 if len(set(recent_calls)) == 1:
-                    print(f"Error: Model appears stuck in a loop, requesting the same function(s) {max_consecutive_repeats} times in a row:")
+                    print(f"Error: Model appears stuck in a loop, requesting the same function(s) {MAX_CONSECUTIVE_REPEATS} times in a row:")
                     for fc in function_calls:
                         print(f"  - {fc.name}({fc.args})")
                     print(f"Stopping after {iteration + 1} iterations to prevent unnecessary API calls.")
