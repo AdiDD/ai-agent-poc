@@ -29,7 +29,7 @@ def main():
         if response:
             break
     
-    if response:
+    if response and response.text:
         print('Final response:')
         print(response.text)
     else:
@@ -72,9 +72,12 @@ def generate_content(client, messages, args):
             if args.verbose:
                 print(f"-> {function_call_result.parts[0].function_response.response}")
         return None, messages
-    else:
-        messages.append([types.Content(role="model", parts=[types.Part(text=response.text)])])
+    elif response.text:
+        messages.append(types.Content(role="model", parts=[types.Part(text=response.text)]))
         return response, messages
+    else:
+        print("No candidates, function calls or text in response, something went wrong")
+        return None, messages
 
 
 
