@@ -1,11 +1,13 @@
 import os
 import argparse
+import json
 
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from prompts import system_prompt
 from call_function import available_functions, call_function
+from config import MAX_ITERATIONS, MAX_CONSECUTIVE_REPEATS
 
 
 def main():
@@ -30,8 +32,38 @@ def main():
     client = genai.Client(api_key=api_key)
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
     response = None
-    for i in range(20):
-        response, messages = generate_content(client, messages, args, i)
+    function_call_history = []
+
+    for i in range(MAX_ITERATIONS):
+        response, messages, function_calls = generate_content(client, messages, args, i)
+
+        if args.debug:
+            print_function_calls(function_calls)
+
+        # Track function calls to detect loops
+        if function_calls:
+            # Create a signature of the current function calls
+            call_signatures = []
+            for fc in function_calls:
+                serialized_args = json.dumps(fc.args, sort_keys=True)
+                call_signatures.append((fc.name, serialized_args))
+            call_signature = tuple(sorted(call_signatures))
+            function_call_history.append(call_signature)
+
+            # Check if we're stuck in a loop (same function call pattern repeated)
+            if len(function_call_history) >= MAX_CONSECUTIVE_REPEATS:
+                recent_calls = function_call_history[-MAX_CONSECUTIVE_REPEATS:]
+                if len(set(recent_calls)) == 1:
+                    print(
+                        f"Error: Model appears stuck in a loop, requesting the same function(s) {MAX_CONSECUTIVE_REPEATS} in a row:"
+                    )
+                    for fc in function_calls:
+                        print(f"  - {fc.name}({fc.args})")
+                    print(
+                        f"Stopping after {i + 1} iterations to prevent unnecessary API calls."
+                    )
+                    return
+
         if response:
             break
 
@@ -43,6 +75,11 @@ def main():
 
 
 def generate_content(client, messages, args, iteration):
+    """
+    Generate content from the model based on the current conversation messages, and handle function calls if present.
+    Returns the model response, updated messages, and any function calls made by the model.
+    """
+
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=messages,
@@ -78,15 +115,15 @@ def generate_content(client, messages, args, iteration):
             messages.append(types.Content(role="user", parts=function_results))
             if args.debug:
                 print(f"-> {function_call_result.parts[0].function_response.response}")
-        return None, messages
+        return None, messages, response.function_calls
     elif response.text:
         messages.append(
             types.Content(role="model", parts=[types.Part(text=response.text)])
         )
-        return response, messages
+        return response, messages, None
     else:
         print("No candidates, function calls or text in response, something went wrong")
-        return None, messages
+        return None, messages, None
 
 
 def print_response_metadata(response, iteration):
@@ -96,6 +133,13 @@ def print_response_metadata(response, iteration):
     print(f"--- Iteration {iteration + 1} ---")
     print(f"Prompt tokens: {usage_metadata.prompt_token_count}")
     print(f"Response tokens: {usage_metadata.candidates_token_count}")
+
+
+def print_function_calls(function_calls):
+    if function_calls:
+        print("Function calls:")
+        for function_call in function_calls:
+            print(f" - {function_call.name}({function_call.args})")
 
 
 if __name__ == "__main__":
