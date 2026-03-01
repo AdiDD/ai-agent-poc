@@ -93,7 +93,7 @@ def print_response_metadata(response, iteration):
     usage_metadata = response.usage_metadata
     if usage_metadata is None:
         raise RuntimeError("could not read api client response, something went wrong")
-    print(f"--- Iteration {iteration} ---")
+    print(f"--- Iteration {iteration + 1} ---")
     print(f"Prompt tokens: {usage_metadata.prompt_token_count}")
     print(f"Response tokens: {usage_metadata.candidates_token_count}")
 
