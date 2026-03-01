@@ -19,6 +19,10 @@ def write_file(working_dir, file_path, content):
     if not base_name:
         return f'Error: Cannot write to "{file_path}" as it is not pointing to a file'
 
+    # Ensure content ends with a newline character
+    if not content.endswith("\n"):
+        content += "\n"
+
     try:
         os.makedirs(dir_name, exist_ok=True)
         with open(target_path, "w") as f:
