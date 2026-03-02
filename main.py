@@ -46,7 +46,7 @@ def main():
             call_signatures = []
             for fc in function_calls:
                 serialized_args = json.dumps(fc.args, sort_keys=True)
-                call_signatures.append((fc.name, serialized_args))
+                call_signatures.append((fc.name or "", serialized_args))
             call_signature = tuple(sorted(call_signatures))
             function_call_history.append(call_signature)
 
