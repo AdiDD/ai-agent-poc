@@ -1,4 +1,4 @@
-## Disclaimer: This README is written by the AI agent itself, by modifying the work_dir parameter to the current directory, and running the agent with a prompt to write this README file.
+#### This README is written by the AI agent itself, by modifying the `work_dir` parameter to the current directory, and running the agent with a prompt to write this README file.
 
 # AI Agent with Google Gemini Function Calling
 
